@@ -15,6 +15,9 @@ public interface TaskDao {
     @Query("SELECT * FROM tasks ORDER BY priority")
     List<TaskEntry> loadAllTasks();
 
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    TaskEntry loadTaskById(int id);
+
     @Insert
     void insertTask(TaskEntry task);
 
