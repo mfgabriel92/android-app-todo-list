@@ -16,7 +16,6 @@ import com.example.android.todolist.database.TaskEntry;
 
 import java.util.Date;
 
-
 public class AddTaskActivity extends AppCompatActivity {
 
     public static final String EXTRA_TASK_ID = "extraTaskId";
