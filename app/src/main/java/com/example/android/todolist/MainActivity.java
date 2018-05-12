@@ -1,6 +1,9 @@
 package com.example.android.todolist;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -39,12 +42,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         mDb = AppDatabase.getInstance(getApplicationContext());
 
         setItemTouchHelper();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         fetchTasks();
+
     }
 
     @Override
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         int position = viewHolder.getAdapterPosition();
                         List<TaskEntry> tasks = mAdapter.getTasks();
                         mDb.taskDao().deleteTask(tasks.get(position));
-                        fetchTasks();
                     }
                 });
             }
@@ -87,17 +86,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
 
     private void fetchTasks() {
-        AppExecutors.getInstance().getDiskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
+        final LiveData<List<TaskEntry>> tasks = mDb.taskDao().loadAllTasks();
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(tasks);
-                    }
-                });
+        tasks.observe(this, new Observer<List<TaskEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<TaskEntry> taskEntries) {
+                mAdapter.setTasks(taskEntries);
             }
         });
     }
