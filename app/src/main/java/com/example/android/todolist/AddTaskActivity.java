@@ -8,7 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import com.example.android.todolist.database.AppDatabase;
 import com.example.android.todolist.database.TaskEntry;
+
+import java.util.Date;
 
 
 public class AddTaskActivity extends AppCompatActivity {
@@ -24,6 +27,7 @@ public class AddTaskActivity extends AppCompatActivity {
     private EditText mEditText;
     private RadioGroup mRadioGroup;
     private Button mButton;
+    private AppDatabase mDb;
 
     private int mTaskId = DEFAULT_TASK_ID;
 
@@ -53,25 +57,14 @@ public class AddTaskActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    private void initViews() {
-        mEditText = findViewById(R.id.editTextTaskDescription);
-        mRadioGroup = findViewById(R.id.radioGroup);
-
-        mButton = findViewById(R.id.saveButton);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSaveButtonClicked();
-            }
-        });
-    }
-
-    private void populateUI(TaskEntry task) {
-
-    }
-
     public void onSaveButtonClicked() {
-        // Not yet implemented
+        String description = mEditText.getText().toString();
+        int priority = getPriorityFromViews();
+        Date date = new Date();
+
+        TaskEntry taskEntry = new TaskEntry(description, priority, date);
+        mDb.taskDao().insertTask(taskEntry);
+        finish();
     }
 
     public int getPriorityFromViews() {
@@ -101,5 +94,24 @@ public class AddTaskActivity extends AppCompatActivity {
             case PRIORITY_LOW:
                 ((RadioGroup) findViewById(R.id.radioGroup)).check(R.id.radButton3);
         }
+    }
+
+    private void initViews() {
+        mEditText = findViewById(R.id.editTextTaskDescription);
+        mRadioGroup = findViewById(R.id.radioGroup);
+
+        mButton = findViewById(R.id.saveButton);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSaveButtonClicked();
+            }
+        });
+
+        mDb = AppDatabase.getIntance(getApplicationContext());
+    }
+
+    private void populateUI(TaskEntry task) {
+
     }
 }
