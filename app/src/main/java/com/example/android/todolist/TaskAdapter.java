@@ -60,6 +60,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         return mTaskEntries.size();
     }
 
+    public void setTasks(List<TaskEntry> taskEntries) {
+        mTaskEntries = taskEntries;
+        notifyDataSetChanged();
+    }
+
     public interface ItemClickListener { void onItemClickListener(int itemId); }
 
     private int getPriorityColor(int priority) {

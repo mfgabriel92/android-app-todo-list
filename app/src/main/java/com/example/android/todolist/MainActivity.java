@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
+import com.example.android.todolist.database.AppDatabase;
+
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 
 public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRvMainActivity;
     private TaskAdapter mAdapter;
+    private AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +28,20 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
         mRvMainActivity = findViewById(R.id.rvMainActivity);
         mRvMainActivity.setLayoutManager(new LinearLayoutManager(this));
-        mRvMainActivity.setAdapter(new TaskAdapter(this, this));
+
+        mAdapter = new TaskAdapter(this, this);
+        mRvMainActivity.setAdapter(mAdapter);
         mRvMainActivity.addItemDecoration(new DividerItemDecoration(getApplicationContext(), VERTICAL));
 
+        mDb = AppDatabase.getIntance(getApplicationContext());
+
         setItemTouchHelper();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.setTasks(mDb.taskDao().loadAllTasks());
     }
 
     @Override
