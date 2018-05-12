@@ -1,6 +1,5 @@
 package com.example.android.todolist;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -27,7 +26,6 @@ public class AddTaskActivity extends AppCompatActivity {
     public static final int PRIORITY_MEDIUM = 2;
     public static final int PRIORITY_LOW = 3;
     private static final int DEFAULT_TASK_ID = -1;
-    private static final String TAG = AddTaskActivity.class.getSimpleName();
 
     private EditText mEditText;
     private RadioGroup mRadioGroup;
@@ -54,7 +52,7 @@ public class AddTaskActivity extends AppCompatActivity {
                 mTaskId = intent.getIntExtra(EXTRA_TASK_ID, DEFAULT_TASK_ID);
 
                 AddTaskViewModelFactory factory = new AddTaskViewModelFactory(mDb, mTaskId);
-                final AddTaskViewModel viewModel = ViewModelProviders.of(this).get(AddTaskViewModel.class);
+                final AddTaskViewModel viewModel = ViewModelProviders.of(this, factory).get(AddTaskViewModel.class);
 
                 viewModel.getTasks().observe(this, new Observer<TaskEntry>() {
                     @Override
