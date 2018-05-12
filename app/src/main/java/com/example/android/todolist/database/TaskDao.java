@@ -17,7 +17,7 @@ public interface TaskDao {
     LiveData<List<TaskEntry>> loadAllTasks();
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    TaskEntry loadTaskById(int id);
+    LiveData<TaskEntry> loadTaskById(int id);
 
     @Insert
     void insertTask(TaskEntry task);
