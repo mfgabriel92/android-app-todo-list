@@ -14,10 +14,10 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "todolist";
     private static AppDatabase sInstance;
 
-    public static AppDatabase getIntance(Context context) {
+    public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).allowMainThreadQueries().build();
+                sInstance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).build();
             }
         }
 
