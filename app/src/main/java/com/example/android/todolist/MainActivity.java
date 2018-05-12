@@ -44,19 +44,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     @Override
     protected void onResume() {
         super.onResume();
-        AppExecutors.getInstance().getDiskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.setTasks(tasks);
-                    }
-                });
-            }
-        });
+        fetchTasks();
     }
 
     @Override
@@ -72,8 +60,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                AppExecutors.getInstance().getDiskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        int position = viewHolder.getAdapterPosition();
+                        List<TaskEntry> tasks = mAdapter.getTasks();
+                        mDb.taskDao().deleteTask(tasks.get(position));
+                        fetchTasks();
+                    }
+                });
             }
         }).attachToRecyclerView(mRvMainActivity);
 
@@ -83,6 +79,22 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             public void onClick(View v) {
                 Intent addTaskIntent = new Intent(MainActivity.this, AddTaskActivity.class);
                 startActivity(addTaskIntent);
+            }
+        });
+    }
+
+    private void fetchTasks() {
+        AppExecutors.getInstance().getDiskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<TaskEntry> tasks = mDb.taskDao().loadAllTasks();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.setTasks(tasks);
+                    }
+                });
             }
         });
     }
